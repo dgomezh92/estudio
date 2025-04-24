@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactivo</title>
+    <style>
+        /* CSS Styles remain the same as the previous example */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #quiz-selection, #quiz-container, #results-container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 650px; /* Max width for readability */
+            margin-bottom: 20px;
+            text-align: center; /* Center content within containers */
+        }
+
+        #quiz-selection h2, #quiz-container h2, #results-container h2 {
+             margin-top: 0;
+             color: #0056b3; /* A nice blue */
+        }
+
+        #quiz-selection select, #quiz-selection button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #quiz-selection button {
+            background-color: #28a745; /* Green */
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+        #quiz-selection button:hover {
+            background-color: #218838;
+        }
+
+
+        #question-counter {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        #question-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: left; /* Question text aligns left */
+        }
+
+        #answer-options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between buttons */
+        }
+
+        #answer-options button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1em;
+            text-align: left;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        #answer-options button:hover:not(:disabled) {
+            background-color: #dbe1e5;
+            border-color: #b6bfc8;
+        }
+
+        #answer-options button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #answer-options button.correct {
+            background-color: #d4edda; /* Light green */
+            border-color: #c3e6cb;
+            color: #155724; /* Dark green */
+            font-weight: bold;
+        }
+
+        #answer-options button.incorrect {
+            background-color: #f8d7da; /* Light red */
+            border-color: #f5c6cb;
+            color: #721c24; /* Dark red */
+        }
+        #answer-options button.incorrect:not(.correct) { /* Avoid double styling if user clicks correct */
+             text-decoration: line-through;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 1.5em; /* Reserve space */
+        }
+        .feedback-correct {
+            color: #155724;
+        }
+        .feedback-incorrect {
+            color: #721c24;
+        }
+
+        #next-button, #restart-button {
+            display: block;
+            margin: 25px auto 0 auto; /* Center button */
+            padding: 10px 25px;
+            font-size: 1em;
+            background-color: #007bff; /* Blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #next-button:hover, #restart-button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Quiz Interactivo</h1>
+
+    <!-- 1. Selection Area -->
+    <div id="quiz-selection">
+        <h2>Selecciona un Módulo</h2>
+        <select id="quiz-topic-select">
+            <option value="">-- Elige un módulo --</option>
+        </select>
+        <button id="start-quiz-button" disabled>Empezar Quiz</button>
+    </div>
+
+    <!-- 2. Quiz Area (Initially Hidden) -->
+    <div id="quiz-container" class="hidden">
+        <div id="question-counter">Pregunta X de Y</div>
+        <div id="question-text">Aquí va el texto de la pregunta...</div>
+        <div id="answer-options">
+            <!-- Answer buttons will be added by JavaScript -->
+        </div>
+        <div id="feedback"></div>
+        <button id="next-button" class="hidden">Siguiente Pregunta</button>
+    </div>
+
+    <!-- 3. Results Area (Initially Hidden) -->
+    <div id="results-container" class="hidden">
+        <h2>Resultados</h2>
+        <p id="score-text">Has acertado X de Y preguntas.</p>
+        <button id="restart-button">Elegir otro módulo</button>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- INCLUYE TUS ARCHIVOS JS GENERADOS AQUÍ                             -->
+    <!-- =================================================================== -->
+    <script src="Output_js/domande_a_risposta_chiusa_1.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_2.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_3.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_4.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_5.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_6.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_7.js"></script>
+    <script src="Output_js/domande_a_risposta_chiusa_8.js"></script>
+    <!-- =================================================================== -->
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. DOM References (remain the same) ---
+            const quizSelectionDiv = document.getElementById('quiz-selection');
+            const quizTopicSelect = document.getElementById('quiz-topic-select');
+            const startQuizButton = document.getElementById('start-quiz-button');
+
+            const quizContainerDiv = document.getElementById('quiz-container');
+            const questionCounter = document.getElementById('question-counter');
+            const questionText = document.getElementById('question-text');
+            const answerOptionsDiv = document.getElementById('answer-options');
+            const feedbackDiv = document.getElementById('feedback');
+            const nextButton = document.getElementById('next-button');
+
+            const resultsContainerDiv = document.getElementById('results-container');
+            const scoreText = document.getElementById('score-text');
+            const restartButton = document.getElementById('restart-button');
+
+            // --- 2. State Variables (remain the same) ---
+            let availableQuizzes = {}; // Will hold { 'Modulo X': questionArray, ... }
+            let currentQuizData = [];
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let answerSelected = false;
+
+            // --- Helper function to shuffle an array (Fisher-Yates Algorithm) --- <<< CAMBIO: Función añadida
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    // Pick a random index from 0 to i
+                    const j = Math.floor(Math.random() * (i + 1));
+                    // Swap elements array[i] and array[j]
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // --- 3. Populate Quiz Selection ---
+            function populateQuizSelector() {
+                // Find globally defined quiz data arrays
+                if (typeof domande_a_risposta_chiusa_1 !== 'undefined') availableQuizzes['Modulo 1'] = domande_a_risposta_chiusa_1;
+                if (typeof domande_a_risposta_chiusa_2 !== 'undefined') availableQuizzes['Modulo 2'] = domande_a_risposta_chiusa_2;
+                if (typeof domande_a_risposta_chiusa_3 !== 'undefined') availableQuizzes['Modulo 3'] = domande_a_risposta_chiusa_3;
+                if (typeof domande_a_risposta_chiusa_4 !== 'undefined') availableQuizzes['Modulo 4'] = domande_a_risposta_chiusa_4;
+                if (typeof domande_a_risposta_chiusa_5 !== 'undefined') availableQuizzes['Modulo 5'] = domande_a_risposta_chiusa_5;
+                if (typeof domande_a_risposta_chiusa_6 !== 'undefined') availableQuizzes['Modulo 6'] = domande_a_risposta_chiusa_6;
+                if (typeof domande_a_risposta_chiusa_7 !== 'undefined') availableQuizzes['Modulo 7'] = domande_a_risposta_chiusa_7;
+                if (typeof domande_a_risposta_chiusa_8 !== 'undefined') availableQuizzes['Modulo 8'] = domande_a_risposta_chiusa_8;
+
+                // Clear previous options except the placeholder
+                quizTopicSelect.innerHTML = '<option value="">-- Elige un módulo --</option>';
+
+                // Add options to the select dropdown
+                for (const topic in availableQuizzes) {
+                    if (Array.isArray(availableQuizzes[topic]) && availableQuizzes[topic].length > 0) {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        quizTopicSelect.appendChild(option);
+                    } else {
+                         console.warn(`Quiz data for "${topic}" (variable associated with it) is empty or not an array.`);
+                    }
+                }
+
+                 // Enable start button only if a topic is selected
+                 quizTopicSelect.addEventListener('change', () => {
+                    startQuizButton.disabled = quizTopicSelect.value === "";
+                });
+            }
+
+            // --- 4. Quiz Logic Functions ---
+
+            function startQuiz() {
+                const selectedTopic = quizTopicSelect.value;
+                if (!selectedTopic || !availableQuizzes[selectedTopic]) {
+                    alert("Por favor, selecciona un módulo válido.");
+                    return;
+                }
+
+                currentQuizData = availableQuizzes[selectedTopic];
+                 // <<< CAMBIO: Opcional: Barajar las preguntas del módulo si también lo deseas
+                 // shuffleArray(currentQuizData); // Descomenta esta línea si quieres que las PREGUNTAS salgan en orden aleatorio
+
+                currentQuestionIndex = 0;
+                score = 0;
+                answerSelected = false;
+
+                quizSelectionDiv.classList.add('hidden');
+                resultsContainerDiv.classList.add('hidden');
+                quizContainerDiv.classList.remove('hidden');
+                feedbackDiv.innerHTML = '';
+                nextButton.classList.add('hidden');
+
+                displayQuestion();
+            }
+
+            // --- CAMBIO: Función displayQuestion modificada ---
+            function displayQuestion() {
+                answerSelected = false;
+                feedbackDiv.innerHTML = '';
+                feedbackDiv.className = '';
+                nextButton.classList.add('hidden');
+
+                if (currentQuestionIndex >= currentQuizData.length) {
+                    showResults();
+                    return;
+                }
+
+                const questionData = currentQuizData[currentQuestionIndex];
+                questionCounter.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuizData.length}`;
+                questionText.textContent = questionData.question;
+
+                answerOptionsDiv.innerHTML = ''; // Limpia opciones anteriores
+
+                // --- CAMBIO: Barajar las respuestas ---
+                // 1. Crear una copia del array de respuestas
+                const answersToDisplay = [...questionData.answers]; // Usamos spread syntax para clonar
+
+                // 2. Barajar la copia
+                shuffleArray(answersToDisplay);
+                // --- FIN CAMBIO ---
+
+                // 3. Iterar sobre el array barajado para crear los botones
+                answersToDisplay.forEach(answer => {
+                    const button = document.createElement('button');
+                    button.textContent = answer.text;
+                    // IMPORTANTE: El evento click todavía usa la propiedad 'correct'
+                    // del objeto 'answer' original (que está dentro de la copia barajada)
+                    button.addEventListener('click', () => selectAnswer(button, answer.correct === true));
+                    answerOptionsDiv.appendChild(button);
+                });
+            }
+            // --- FIN CAMBIO en displayQuestion ---
+
+
+            function selectAnswer(buttonElement, isCorrect) {
+                 if (answerSelected) return;
+                 answerSelected = true;
+
+                const allAnswerButtons = answerOptionsDiv.querySelectorAll('button');
+                allAnswerButtons.forEach(btn => btn.disabled = true); // Deshabilita todos los botones
+
+                if (isCorrect) {
+                    buttonElement.classList.add('correct');
+                    feedbackDiv.textContent = '¡Correcto!';
+                    feedbackDiv.className = 'feedback-correct';
+                    score++;
+                } else {
+                    buttonElement.classList.add('incorrect');
+                    feedbackDiv.textContent = 'Incorrecto.';
+                    feedbackDiv.className = 'feedback-incorrect';
+
+                    // Resaltar la respuesta correcta aunque el usuario falló
+                    allAnswerButtons.forEach((btn) => {
+                        // Encuentra el objeto de respuesta original correspondiente al texto de este botón
+                        // Se busca en el array ORIGINAL (no el barajado) para asegurar que la propiedad 'correct' es fiable
+                        const correspondingAnswer = currentQuizData[currentQuestionIndex].answers.find(ans => ans.text === btn.textContent);
+                        if (correspondingAnswer && correspondingAnswer.correct === true) {
+                            btn.classList.add('correct'); // Marca la correcta aunque no fuera la clicada
+                        }
+                    });
+                }
+
+                // Mostrar el botón "Siguiente" o los resultados
+                if (currentQuestionIndex < currentQuizData.length - 1) {
+                    nextButton.classList.remove('hidden');
+                } else {
+                    // Espera un poco antes de mostrar los resultados para que el usuario vea el feedback
+                    setTimeout(showResults, 1500);
+                }
+            }
+
+            function nextQuestion() {
+                currentQuestionIndex++;
+                displayQuestion(); // Llamará a la versión modificada que baraja las respuestas
+            }
+
+            function showResults() {
+                quizContainerDiv.classList.add('hidden');
+                resultsContainerDiv.classList.remove('hidden');
+                const percentage = currentQuizData.length > 0 ? Math.round((score / currentQuizData.length) * 100) : 0;
+                scoreText.textContent = `Has acertado ${score} de ${currentQuizData.length} preguntas (${percentage}%).`;
+            }
+
+            function restartQuiz() {
+                resultsContainerDiv.classList.add('hidden');
+                quizContainerDiv.classList.add('hidden');
+                quizSelectionDiv.classList.remove('hidden');
+                quizTopicSelect.value = ""; // Resetea el dropdown
+                startQuizButton.disabled = true; // Deshabilita el botón de inicio
+                 // Repopular podría ser necesario si el orden de los módulos debe ser aleatorio cada vez
+                 // populateQuizSelector(); // Descomenta si quieres que el orden de los módulos también sea aleatorio cada vez que reinicias
+            }
+
+            // --- 5. Event Listeners (remain the same) ---
+            startQuizButton.addEventListener('click', startQuiz);
+            nextButton.addEventListener('click', nextQuestion);
+            restartButton.addEventListener('click', restartQuiz);
+
+            // --- 6. Initial Setup ---
+            populateQuizSelector(); // Llama para llenar el selector al cargar la página
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
