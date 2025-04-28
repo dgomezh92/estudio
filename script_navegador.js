@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreText = document.getElementById('score-text');
     const restartButton = document.getElementById('restart-button');
 
+    // --- Semaphore Variables ---
+    let semaphoreContainer;
+    let semaphoreTimers = [];
+    const semaphoreColors = ['green', 'yellow', 'red'];
+    const semaphoreIntervals = [15000, 15000]; // 15s then 15s
+
     // --- 2. State Variables ---
     let availableQuizzes = {};
     let currentQuizData = [];
@@ -28,6 +34,37 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // --- Create or reset the semaphore indicator ---
+    function initSemaphore() {
+        // Remove existing
+        if (semaphoreContainer) {
+            semaphoreTimers.forEach(clearTimeout);
+            semaphoreTimers = [];
+            semaphoreContainer.remove();
+        }
+        // Create
+        semaphoreContainer = document.createElement('div');
+        semaphoreContainer.id = 'semaphore';
+        semaphoreContainer.style.width = '20px';
+        semaphoreContainer.style.height = '20px';
+        semaphoreContainer.style.borderRadius = '50%';
+        semaphoreContainer.style.margin = '10px auto';
+        // Start green
+        semaphoreContainer.style.backgroundColor = semaphoreColors[0];
+        // Insert above question text
+        quizContainerDiv.insertBefore(semaphoreContainer, questionText);
+
+        // Schedule color changes
+        let cumulative = 0;
+        for (let i = 0; i < semaphoreIntervals.length; i++) {
+            cumulative += semaphoreIntervals[i];
+            const timer = setTimeout(() => {
+                semaphoreContainer.style.backgroundColor = semaphoreColors[i + 1];
+            }, cumulative);
+            semaphoreTimers.push(timer);
         }
     }
 
@@ -68,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Clonamos y barajamos las preguntas para este quiz
         currentQuizData = [...availableQuizzes[selectedTopic]];
         shuffleArray(currentQuizData);
 
@@ -88,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayQuestion() {
+        // Reset and start semaphore
+        initSemaphore();
+
         answerSelected = false;
         feedbackDiv.innerHTML = '';
         feedbackDiv.className = '';
@@ -117,6 +156,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectAnswer(buttonElement, isCorrect) {
+        // Stop semaphore timers
+        semaphoreTimers.forEach(clearTimeout);
+
         if (answerSelected) return;
         answerSelected = true;
 
@@ -148,8 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentPercentage = Math.round((score / questionsAnsweredSoFar) * 100);
             intermediateStatsDiv.innerHTML = `📊 **Progreso (tras ${questionsAnsweredSoFar} preguntas):** Has acertado ${score} (${currentPercentage}%)`;
             intermediateStatsDiv.classList.remove('hidden');
-        } else {
-            intermediateStatsDiv.classList.add('hidden');
         }
 
         if (currentQuestionIndex < currentQuizData.length - 1) {
