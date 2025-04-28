@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. DOM References ---
     const quizSelectionDiv = document.getElementById('quiz-selection');
@@ -11,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const answerOptionsDiv = document.getElementById('answer-options');
     const feedbackDiv = document.getElementById('feedback');
     const nextButton = document.getElementById('next-button');
-    // <<< NUEVA REFERENCIA DOM >>>
     const intermediateStatsDiv = document.getElementById('intermediate-stats');
 
     const resultsContainerDiv = document.getElementById('results-container');
@@ -35,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 3. Populate Quiz Selection ---
     function populateQuizSelector() {
-      // (Código sin cambios aquí...)
         if (typeof domande_a_risposta_chiusa_1 !== 'undefined') availableQuizzes['Modulo 1'] = domande_a_risposta_chiusa_1;
         if (typeof domande_a_risposta_chiusa_2 !== 'undefined') availableQuizzes['Modulo 2'] = domande_a_risposta_chiusa_2;
         if (typeof domande_a_risposta_chiusa_3 !== 'undefined') availableQuizzes['Modulo 3'] = domande_a_risposta_chiusa_3;
@@ -54,17 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.textContent = topic;
                 quizTopicSelect.appendChild(option);
             } else {
-                 console.warn(`Quiz data for "${topic}" (variable associated with it) is empty or not an array.`);
+                console.warn(`Quiz data for "${topic}" is empty or not an array.`);
             }
         }
 
-         quizTopicSelect.addEventListener('change', () => {
+        quizTopicSelect.addEventListener('change', () => {
             startQuizButton.disabled = quizTopicSelect.value === "";
         });
     }
 
     // --- 4. Quiz Logic Functions ---
-
     function startQuiz() {
         const selectedTopic = quizTopicSelect.value;
         if (!selectedTopic || !availableQuizzes[selectedTopic]) {
@@ -72,8 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        currentQuizData = availableQuizzes[selectedTopic];
-        // shuffleArray(currentQuizData); // Opcional: barajar preguntas
+        // Clonamos y barajamos las preguntas para este quiz
+        currentQuizData = [...availableQuizzes[selectedTopic]];
+        shuffleArray(currentQuizData);
 
         currentQuestionIndex = 0;
         score = 0;
@@ -84,9 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
         quizContainerDiv.classList.remove('hidden');
         feedbackDiv.innerHTML = '';
         nextButton.classList.add('hidden');
-        // <<< ASEGURAR QUE LAS ESTADÍSTICAS INTERMEDIAS ESTÉN OCULTAS AL INICIO >>>
         intermediateStatsDiv.classList.add('hidden');
-        intermediateStatsDiv.innerHTML = ''; // Limpiar contenido anterior
+        intermediateStatsDiv.innerHTML = '';
 
         displayQuestion();
     }
@@ -96,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackDiv.innerHTML = '';
         feedbackDiv.className = '';
         nextButton.classList.add('hidden');
-        // <<< OCULTAR ESTADÍSTICAS INTERMEDIAS AL MOSTRAR NUEVA PREGUNTA >>>
         intermediateStatsDiv.classList.add('hidden');
 
         if (currentQuestionIndex >= currentQuizData.length) {
@@ -122,13 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectAnswer(buttonElement, isCorrect) {
-         if (answerSelected) return;
-         answerSelected = true;
+        if (answerSelected) return;
+        answerSelected = true;
 
         const allAnswerButtons = answerOptionsDiv.querySelectorAll('button');
         allAnswerButtons.forEach(btn => btn.disabled = true);
 
-        // Evaluar respuesta y actualizar puntuación/feedback (sin cambios aquí)
         if (isCorrect) {
             buttonElement.classList.add('correct');
             feedbackDiv.textContent = '¡Correcto!';
@@ -138,17 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonElement.classList.add('incorrect');
             feedbackDiv.textContent = 'Incorrecto.';
             feedbackDiv.className = 'feedback-incorrect';
-            const correctAnswerData = currentQuizData[currentQuestionIndex].answers.find(ans => ans.correct === true);
+            const correctAnswerData = currentQuizData[currentQuestionIndex].answers.find(ans => ans.correct);
             if (correctAnswerData) {
-                 allAnswerButtons.forEach(btn => {
-                    if (btn.textContent === correctAnswerData.text) {
-                        btn.classList.add('correct');
-                    }
-                 });
+                allAnswerButtons.forEach(btn => {
+                    if (btn.textContent === correctAnswerData.text) btn.classList.add('correct');
+                });
             }
         }
 
-        // --- <<< INICIO: LÓGICA PARA ESTADÍSTICAS CADA 30 PREGUNTAS >>> ---
         const questionsAnsweredSoFar = currentQuestionIndex + 1;
         const isMilestone = questionsAnsweredSoFar % 30 === 0;
         const isNotLastQuestion = currentQuestionIndex < currentQuizData.length - 1;
@@ -158,29 +149,24 @@ document.addEventListener('DOMContentLoaded', () => {
             intermediateStatsDiv.innerHTML = `📊 **Progreso (tras ${questionsAnsweredSoFar} preguntas):** Has acertado ${score} (${currentPercentage}%)`;
             intermediateStatsDiv.classList.remove('hidden');
         } else {
-            // Asegurarse de que esté oculto si no es un hito
             intermediateStatsDiv.classList.add('hidden');
         }
-        // --- <<< FIN: LÓGICA PARA ESTADÍSTICAS CADA 30 PREGUNTAS >>> ---
 
-
-        // Mostrar el botón "Siguiente" o los resultados finales (sin cambios aquí)
         if (currentQuestionIndex < currentQuizData.length - 1) {
             nextButton.classList.remove('hidden');
         } else {
-            setTimeout(showResults, 1500); // Esperar antes de mostrar resultados finales
+            setTimeout(showResults, 1500);
         }
     }
 
     function nextQuestion() {
         currentQuestionIndex++;
-        displayQuestion(); // Esto ocultará las stats intermedias y mostrará la sig. pregunta
+        displayQuestion();
     }
 
     function showResults() {
         quizContainerDiv.classList.add('hidden');
         resultsContainerDiv.classList.remove('hidden');
-        // <<< OCULTAR STATS INTERMEDIAS AL MOSTRAR RESULTADOS FINALES >>>
         intermediateStatsDiv.classList.add('hidden');
         const percentage = currentQuizData.length > 0 ? Math.round((score / currentQuizData.length) * 100) : 0;
         scoreText.textContent = `Has acertado ${score} de ${currentQuizData.length} preguntas (${percentage}%).`;
@@ -189,12 +175,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function restartQuiz() {
         resultsContainerDiv.classList.add('hidden');
         quizContainerDiv.classList.add('hidden');
-        // <<< OCULTAR STATS INTERMEDIAS AL REINICIAR >>>
         intermediateStatsDiv.classList.add('hidden');
         quizSelectionDiv.classList.remove('hidden');
         quizTopicSelect.value = "";
         startQuizButton.disabled = true;
-        // populateQuizSelector(); // Opcional: re-barajar módulos
     }
 
     // --- 5. Event Listeners ---
@@ -204,5 +188,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. Initial Setup ---
     populateQuizSelector();
-
-}); // End DOMContentLoaded
+});
