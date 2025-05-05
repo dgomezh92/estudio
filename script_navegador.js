@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const questionsAnsweredSoFar = currentQuestionIndex + 1;
-        const isMilestone = questionsAnsweredSoFar % 30 === 0;
+        const isMilestone = questionsAnsweredSoFar % 10 === 0;
         const isNotLastQuestion = currentQuestionIndex < currentQuizData.length - 1;
 
         if (isMilestone && isNotLastQuestion) {
