@@ -1,0 +1,15 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/psf/black          # formateador
+    rev:  24.4.2                                # versión fija
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/flake8       # linter
+    rev:  7.0.0
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pre-commit/pre-commit-hooks  # hooks genéricos
+    rev:  5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: end-of-file-fixer
